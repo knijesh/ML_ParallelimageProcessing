@@ -9,8 +9,9 @@ from keras.models import load_model
 def pred(file_list,labels,q):
     Output_list =[]
     file_Output_list1 = []
-    new_Char_BBs = []
+    new_Char_BBs = []    
     count = 0
+    result_dict ={}
     Model_File = 'C:\\Work\\Barclays\\modelNormalTapeFontChar1_13k_offaligned_48by32.h5'
     model=load_model(Model_File)
     for file_path in file_list: 
@@ -212,7 +213,9 @@ def pred(file_list,labels,q):
 
                 Output_list.append(Output)
                 file_Output_list1.append(file_path.split("/")[-1])
-            q.put(charlist)
+            result_dict[file_path] = charlist
+            q.put(result_dict)
+    q.put("/t")
     #return charlist
             
 

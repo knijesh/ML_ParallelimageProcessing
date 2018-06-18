@@ -18,10 +18,7 @@ def util(path,elements=100000):
 	        	labels.append(i)        	
 
 	return file_list,labels
-	#file_list
 
-# file_list,labels,model = util(path='C:\\Work\\Barclays\\Sample_Test_images')
-# print(file_list)
 
 def chunk_generator(lists, batch_size): 
 	"""
@@ -31,3 +28,15 @@ def chunk_generator(lists, batch_size):
 	    yield lists[i:i + batch_size]
 
 
+def queue_reader(queue):
+	"""
+	Function to manipulate the Queue reading
+	"""
+	results = []
+	while True:
+	    res=queue.get()
+	    #print(res)   	             
+	    if (res == '/t'):	    	
+	        return results
+	    else:
+	    	results.append(res) 

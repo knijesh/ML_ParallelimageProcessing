@@ -25,24 +25,32 @@ def multi_call(path):
 	file_list,labels = util(path)
 	 
 	try:
-		file_chunk_list = list(chunk_generator(file_list, 2000))
+		file_chunk_list = list(chunk_generator(file_list, 4000))
 	except Exception:
 		raise AttributeError("Chunking Invalid")	
 	try:
 		processes = [Process(target=pred, args=(fil, labels, q)) for fil in file_chunk_list]
-		for p in processes:
+		for p in processes:			
 		    p.start()
-		while q:
-		    print(q.get())
+		    #print("Process--->{} started".format(p))
 		for p in processes:
 		    p.join()
+		    #print("Process--->{} ended".format(p))
+
 	except Exception as e:		
 		print("Process Spawn Error-- {}".format(str(e)))
+
+	try:
+		results = queue_reader(q)
+		print(results)
+	except Exception as e:
+		print("Queue reader Error-- {}".format(str(e)))
+
 	return
 
 
 if __name__ == '__main__':
     start = time.time()
-    multi_call(path='C:\\Work\\Barclays\\Sample_Test')
+    multi_call(path='C:\\Work\\Barclays\\Sample_Test_images')
     print("Total time taken ---{}".format(time.time() - start))
 
