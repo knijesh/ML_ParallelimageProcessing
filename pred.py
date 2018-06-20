@@ -208,14 +208,17 @@ def pred(file_list,labels,q):
                 else:
                     charlist1 = charlist
                 Output = ''.join(str(e) for e in charlist1)
-                #print Output
+                with open((str(file_path)+'.txt'),'w') as f:
+                    if not os.path.exists('file_path.txt'):
+                        f.write(os.path.dirname(file_path)+"\t"+os.path.basename(file_path)+"\t"+str(Output)+"\n")
+                #print(Output)
                 #cv2.imwrite('/Users/g01179665/Desktop/PPI Templates/PPI/POC/Results/Normal Tape/'+ file_path.split("/")[-2] +'/' + file_path.split("/")[-1].split(".")[0] + '_' +  Output +'.tif',img5)
 
                 Output_list.append(Output)
                 file_Output_list1.append(file_path.split("/")[-1])
             result_dict[file_path] = charlist
             q.put(result_dict)
-    q.put("/t")
+    q.put("/t")  
     #return charlist
             
 

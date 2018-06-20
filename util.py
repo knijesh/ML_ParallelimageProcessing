@@ -5,17 +5,26 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 import tensorflow as tf
 from keras.models import load_model
 
-def util(path,elements=100000):	
+def util(path,elements=100000,folder_list=[]):	
 	"""
 	Wrapper to deal with I/O reading and memory check of data Structure
 	"""
 	file_list =[]
 	labels =[]
-	for root, dirs, files in os.walk(path):		
-	    for i,fil in enumerate(files):	        
-	        if not len(file_list)>elements:
-	        	file_list.append(os.path.join(root,fil))
-	        	labels.append(i)        	
+	if len(folder_list) == 0 and not len(file_list) > elements:
+		for root, dirs, files in os.walk(path):		
+		    for i,fil in enumerate(files):
+		    	if fil.endswith('tif'):		    	
+			    	file_list.append(os.path.join(root,fil))
+			    	labels.append(i)
+	else:
+		folders = os.listdir(path)
+		dest_folders = [os.path.join(path,fold) for fold in folders if fold in folder_list]		
+		for root, dirs, files in os.walk(path):
+			for i,fil in enumerate(files):
+				if fil.endswith('tif') and root in dest_folders:
+					file_list.append(os.path.join(root,fil))
+					labels.append(i)
 
 	return file_list,labels
 
