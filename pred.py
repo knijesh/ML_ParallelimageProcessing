@@ -208,9 +208,11 @@ def pred(file_list,labels,q):
                 else:
                     charlist1 = charlist
                 Output = ''.join(str(e) for e in charlist1)
+                
                 with open((str(file_path)+'.txt'),'w') as f:
                     if not os.path.exists('file_path.txt'):
-                        f.write(os.path.dirname(file_path)+"\t"+os.path.basename(file_path)+"\t"+str(Output)+"\n")
+                        f.write("TapeNumber/FolderName"+"\t"+"File Name"+"\t"+"OCR Output"+"\t"+"ImageNumber"+"\n\n")
+                        f.write(os.path.dirname(file_path)+"\t"+os.path.basename(file_path)+"\t"+str(Output)+str(file_list.index(file_path))+"\n")
                 #print(Output)
                 #cv2.imwrite('/Users/g01179665/Desktop/PPI Templates/PPI/POC/Results/Normal Tape/'+ file_path.split("/")[-2] +'/' + file_path.split("/")[-1].split(".")[0] + '_' +  Output +'.tif',img5)
 
