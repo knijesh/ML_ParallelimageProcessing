@@ -49,3 +49,14 @@ def queue_reader(queue):
 	        return results
 	    else:
 	    	results.append(res) 
+
+def files_concatenate(filenames,dir_name):
+	"""
+	text concatenation
+
+	"""	
+	with open(dir_name, 'w') as outfile:
+		for fname in filenames:
+			with open(fname) as infile:
+				for line in infile:
+					outfile.write(line)
