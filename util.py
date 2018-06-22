@@ -3,6 +3,8 @@ import os
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 import tensorflow as tf
+import datetime
+import time
 from keras.models import load_model
 
 def util(path,elements=100000,folder_list=[]):	
@@ -60,3 +62,12 @@ def files_concatenate(filenames,dir_name):
 			with open(fname) as infile:
 				for line in infile:
 					outfile.write(line)
+
+def get_timestamp():
+	times = (
+	datetime.datetime.fromtimestamp(
+	    int(time.time())
+	).strftime('%Y-%m-%d %H:%M:%S')
+	)
+
+	return times.split()[0]

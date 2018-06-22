@@ -5,6 +5,17 @@ import math
 import numpy as np
 from multiprocessing import Queue
 from keras.models import load_model
+import logging
+
+logger = logging.getLogger(__name__)
+
+logname = "app.log"
+
+logging.basicConfig(filename=logname,
+                            filemode='a',
+                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                            datefmt='%H:%M:%S',
+                            level=logging.DEBUG)
 
 def pred(file_list,labels,q):
     Output_list =[]
@@ -14,17 +25,19 @@ def pred(file_list,labels,q):
     result_dict ={}
     Model_File = 'C:\\Work\\Barclays\\modelNormalTapeFontChar1_13k_offaligned_48by32.h5'
     model=load_model(Model_File)
-    for file_path in file_list: 
+    for file_path in file_list:         
         #print(file_path)
         count = count+1
         file_path1 = file_path.split("\\")[-2] +'/'+file_path.split("\\")[-1]
         #print file_path1
         #print '/Users/g01179665/Desktop/PPI Templates/PPI/NormalTape Cropped/'+ file_path1   
         img = cv2.imread(file_path)
+        logging.info("{} read ".format(file_path)) 
         #print(img)
         if img is None:
             print ('Blank Image')
         else:
+            logging.info("Image {} preprocessing ".format(file_path))
             count = count+1
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             edges = cv2.Canny(gray, 80, 120, apertureSize=3)
@@ -44,6 +57,7 @@ def pred(file_list,labels,q):
             IntensityAvg=IntensityAvg.tolist()
             IntensityAvg1  = [[i,a,abs(a-b)] for i,(a,b) in enumerate(zip(IntensityAvg,IntensityAvg[1:]))]
             ymap = [y for y,a,b in IntensityAvg1 if a >40][0]
+            logging.info("ymap created for {}".format(file_path))
 
             orig = img.copy()
             #print(orig)
@@ -66,13 +80,14 @@ def pred(file_list,labels,q):
             img3=im.copy()
             img4 =im.copy()
             im_sum=np.sum(img1,axis=0)
+            logging.info("Column Profiling Threshold for {} set".format(file_path))
             noise_thresh= np.max(im_sum)/4 #### Column profiling threshold
             for k in range(len(im_sum)):
                 if im_sum[k] < noise_thresh:
                     img2[:,k]=0
 
 
-
+            logging.info("Row Profiling Threshold for {} set".format(file_path))
             im_sum=np.sum(img2,axis=1)
             noise_thresh= 255*2        #### Row profiling threshold
             for k in range(len(im_sum)):
@@ -184,6 +199,7 @@ def pred(file_list,labels,q):
                 dimlist1 = sorted(dimlist1, key=lambda x:x[1], reverse=False)
             charlist = []
             #print(dimlist1)
+            logging.info("Dimlist prepared for {}".format(file_path))
             for x1,y1,x2,y2,flag in dimlist1:
                 #print(flag)
                 if flag == 0:
@@ -206,8 +222,9 @@ def pred(file_list,labels,q):
                     result = charlist.index('.')
                     charlist1 = charlist[max(result-5,0):result] + charlist[result:]
                 else:
-                    charlist1 = charlist            
-                Output = ''.join(str(e) for e in charlist1)                             
+                    charlist1 = charlist  
+            logging.info("Output generated for {}".format(file_path))          
+            Output = ''.join(str(e) for e in charlist1)                             
                 
                 # with open((str(file_path)+'.txt'),'w') as f:
                 #     if not os.path.exists('file_path.txt'):
@@ -216,10 +233,10 @@ def pred(file_list,labels,q):
                 #         f.write(os.path.dirname(file_path)+"\t"+os.path.basename(file_path)+"\t"+str(Output)+str(file_list.index(file_path))+"\n")
 
 
-                file_Output_list1.append(file_path.split("/")[-1])
-            result_dict[file_path] = charlist
-            q.put(result_dict)
-        
+                #file_Output_list1.append(file_path.split("/")[-1])
+        result_dict[file_path] = Output
+    logging.info("Outputs  pushed in queue")
+    q.put(result_dict)        
     q.put("/t")
     
     #return charlist
