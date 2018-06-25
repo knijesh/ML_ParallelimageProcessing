@@ -1,5 +1,5 @@
 import os
-import csv
+import csv,traceback
 import pandas as pd
 from util import *
 #output_path = "./output"
@@ -23,15 +23,15 @@ def reconcile(output_path,root_path,folder_list):
 		result=pd.concat(df,axis=0)
 		#Error Files Count Detection from root_path	
 		# file_list_original,labels = util(path=root_path,folder_list=folder_list)
+		# #print(file_list_original)
 
-		# result["new_file_list"] = result["TapeNumber"].map(str) + result["Image_Name"]
+		# result["new_file_list"] = result["TapeNumber"].map(str) +os.sep+result["Image_Name"]
 		# new_file_list = list(result['new_file_list'])
 
 		# error =[err for err in file_list_original if err not in new_file_list]
-		# print(error)
+		# dirname_filename = [[os.path.dirname(each),os.path.basename(each)] for each in error]
 
-		# print(len(error))
-
+		# #drop new_file list		
 		result.to_csv(os.path.join(output_path,'indexfile.csv'),index=False)
 		for root, dirs, files in os.walk(output_path):
 			for f in files:
@@ -39,4 +39,6 @@ def reconcile(output_path,root_path,folder_list):
 					os.remove(os.path.join(root,f))
 
 	except Exception as e:
-		print(str(e))
+		print(str(traceback.print_exc()))
+
+

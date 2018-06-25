@@ -11,6 +11,7 @@ import sys, os
 import logging
 import uuid
 import configparser
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -64,14 +65,17 @@ def multi_call(path,folder_list,chunk_size):
 		    logger.info("{}".format(p))		    
 		    #print("Process--->{} started".format(p))
 
-		try:
+
+		try:			
+			
 			while 1:
 				"""
 				Queue Synchronization
-				"""
-				logging.info("Queue Synchronization")
+
+				"""				
 				running = any(p.is_alive() for p in processes)
 				while not q.empty():
+					logging.info("Queue Synchronization")
 					unique_file_name = str(get_timestamp())+"__"+str(uuid.uuid4())+".txt"
 					results = queue_reader(q)
 					with open(os.path.join(index_file_path,unique_file_name),'a+') as f:
@@ -86,9 +90,9 @@ def multi_call(path,folder_list,chunk_size):
 					break
 
 		except Exception as e:
-			logger.debug("Queue----{} Error".format(e))
+			logger.debug("Queue----{} Error".format(traceback.print_exc()))
 			while 1:
-				raise Exception("Queue reader Error-- {}".format(str(e)))
+				raise Exception("Queue reader Error-- {}".format(str(traceback.print_exc())))
 				break
 
 
@@ -99,8 +103,8 @@ def multi_call(path,folder_list,chunk_size):
 		    #print("Process--->{} ended".format(p))
 
 	except Exception as e:	
-		logger.debug("Process----{} Error".format(p))	
-		print("Process Spawn Error-- {}".format(str(e)))
+		logger.debug("Process----{} Error".format(traceback.print_exc()))	
+		print("Process Spawn Error-- {}".format(str(traceback.print_exc())))
 
 	return
 
@@ -126,4 +130,3 @@ if __name__ == '__main__':
 	reconcile(output_path_reconcile,root_path,folder_list)
 
 	print("Total time taken ---{}".format(time.time() - start))
-
