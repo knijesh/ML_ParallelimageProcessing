@@ -1,1 +1,1 @@
-# Barclays_Mulprocess
+# Parallel Image Processing Library
